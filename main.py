@@ -16,8 +16,7 @@ from pytz import timezone
 # import requests
 # from bs4 import BeautifulSoup as BS
 format = "%Y-%m-%d %H:%M:%S"
-token = "5830418531:AAHNwKbINt9OCYUXaWAE7k7TZSAlpO0y39g"
-bot = telebot.TeleBot(token)
+bot = telebot.TeleBot(API_KEY)
 
 
 ####Start#####
