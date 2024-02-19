@@ -1,3 +1,5 @@
+from datetime import date
+
 import requests
 from bs4 import BeautifulSoup as BS
 from groups import parseGroups
@@ -30,7 +32,8 @@ def parse(numberOfGroup, day, month, year):
     mes = ''
     with open('groups.txt') as f:
         data = f.read()
-
+    current_day = date.today().day
+    print(current_day)
     dictGroups = json.loads(data)
     if dictGroups.get(numberOfGroup) is None:
         mes = 'Введенная вами группа не была найдена, либо вы написали какой - то бред :)'
@@ -40,6 +43,11 @@ def parse(numberOfGroup, day, month, year):
             f'http://timetable.nvsuedu.ru/tm/index.php/timetable/show_timetable/group/{dictGroups.get(numberOfGroup)}//0/?date={day}_{month}_{year}'
         )
         soup = BS(r.content, "html.parser")
+        gr_ls = list(soup.find_all('span', class_='target')[0].children)
+        num_gr = gr_ls[0]
+        name_gr = gr_ls[2]
+        mes += '🔘' + num_gr + f" <b>{name_gr}</b>" + '\n'
+
         # ОбщийЦикл
         try:
             Cicle1 = soup.find('table', class_='table gradient-table').findAll('thead')
@@ -50,7 +58,10 @@ def parse(numberOfGroup, day, month, year):
                     DayWeek = str(DayWeek)
                     DayWeek = filtering(rulesDW, DayWeek)
                     DayWeek = DayWeek.replace(' ', '', 1)
-                    mes += "\n\n" + "⬛️" * 2 + '<b>' + DayWeek + "</b>" + "⬛️" * 2 + '\n\n'
+
+                    today = '\t' * 30+'<b><u>СЕГОДНЯ</u></b>' if current_day == int(re.search(r'\d+', DayWeek)[0]) else ''
+
+                    mes += f"\n{today}\n" + "⬛️" * 2 + '<b>' + DayWeek + f"</b>" + "⬛️" * 2 + '\n\n'
                     if test is not None:
                         mes += '🎉\tЗанятий нет🎉\n'
                     else:
